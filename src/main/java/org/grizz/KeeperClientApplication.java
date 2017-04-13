@@ -86,24 +86,33 @@ public class KeeperClientApplication {
         String login = args[1];
         String password = args[2];
 
-        BasicCookieStore cookieStore = new BasicCookieStore();
-        CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+//        BasicCookieStore cookieStore = new BasicCookieStore();
+//        CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+//
+//        HttpUriRequest request = RequestBuilder.post()
+//          .setUri(keeper + "/login")
+//          .addParameter("username", login)
+//          .addParameter("password", password)
+//          .build();
+//
+//        CloseableHttpResponse response = httpClient.execute(request);
+//
+//        request = RequestBuilder.get(keeper + "/users").build();
+//
+//        response = httpClient.execute(request);
+//
+//        InputStream content = response.getEntity().getContent();
+//        String contentFromKeeper = IOUtils.toString(content, "UTF-8");
+//
+//        System.out.println(contentFromKeeper);
 
-        HttpUriRequest request = RequestBuilder.post()
-          .setUri(keeper + "/login")
-          .addParameter("username", login)
-          .addParameter("password", password)
-          .build();
 
-        CloseableHttpResponse response = httpClient.execute(request);
 
-        request = RequestBuilder.get(keeper + "/users").build();
+        KeeperClient keeperClient = KeeperClientFactory.create(keeper);
+        keeperClient.login(login, password);
 
-        response = httpClient.execute(request);
+        KeeperEntry vab = keeperClient.entries().getLast("vab");
 
-        InputStream content = response.getEntity().getContent();
-        String contentFromKeeper = IOUtils.toString(content, "UTF-8");
-
-        System.out.println(contentFromKeeper);
+//        System.out.println(vab);
     }
 }

@@ -1,10 +1,14 @@
 package org.grizz.keeper.client.http;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -12,8 +16,11 @@ import org.apache.http.impl.client.HttpClients;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class HttpAdapter {
+    private final String charset = "UTF-8";
     private final BasicCookieStore cookieStore = new BasicCookieStore();
     private final CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
     private final String baseUrl;
@@ -25,6 +32,22 @@ public class HttpAdapter {
     public String get(String url) {
         HttpGet httpGet = new HttpGet(baseUrl + url);
         return execute(httpGet);
+    }
+
+    public String post(String url, String content, NameValuePair... params) {
+        HttpUriRequest postRequest = buildPostRequest(url, content, params);
+        return execute(postRequest);
+    }
+
+    private HttpUriRequest buildPostRequest(String url, String content, NameValuePair[] params) {
+        RequestBuilder postRequestBuilder = RequestBuilder.post(baseUrl + url);
+        Arrays.stream(params).forEach(param -> postRequestBuilder.addParameter(param));
+        Optional.ofNullable(content).ifPresent(c -> postRequestBuilder.setEntity(createHttpEntity(c)));
+        return postRequestBuilder.build();
+    }
+
+    private HttpEntity createHttpEntity(String content) {
+        return new StringEntity(content, charset);
     }
 
     private String execute(HttpUriRequest request) {

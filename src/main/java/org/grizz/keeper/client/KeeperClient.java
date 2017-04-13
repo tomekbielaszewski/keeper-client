@@ -1,6 +1,8 @@
 package org.grizz.keeper.client;
 
+import com.google.gson.Gson;
 import lombok.Builder;
+import org.apache.http.message.BasicNameValuePair;
 import org.grizz.keeper.client.http.HttpAdapter;
 import org.grizz.keeper.client.resources.EntriesResourceProvider;
 import org.grizz.keeper.client.resources.GroupsResourceProvider;
@@ -10,16 +12,18 @@ import java.util.List;
 
 @Builder
 public class KeeperClient {
+    private static final String LOGIN = "/login";
+
     private final EntriesResourceProvider entriesResourceProvider;
     private final UsersResourceProvider usersResourceProvider;
     private final GroupsResourceProvider groupsResourceProvider;
     private final HttpAdapter http;
-
-    public EntriesResourceProvider entries() {
-        return null;
-    }
+    private final Gson gson = new Gson();
 
     public KeeperClient login(String login, String password) {
+        http.post(LOGIN, null,
+          new BasicNameValuePair("login", login),
+          new BasicNameValuePair("password", password));
         return this;
     }
 
@@ -27,7 +31,7 @@ public class KeeperClient {
         return this;
     }
 
-    public UsersResourceProvider users() {
+    public KeeperClient changePassword(String oldPassword, String password) {
         return null;
     }
 
@@ -39,11 +43,15 @@ public class KeeperClient {
         return null;
     }
 
-    public KeeperClient changePassword(String oldPassword, String password) {
-        return null;
+    public EntriesResourceProvider entries() {
+        return entriesResourceProvider;
     }
 
     public GroupsResourceProvider groups() {
-        return null;
+        return groupsResourceProvider;
+    }
+
+    public UsersResourceProvider users() {
+        return usersResourceProvider;
     }
 }
