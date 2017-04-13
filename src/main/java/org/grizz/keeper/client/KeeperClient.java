@@ -1,17 +1,21 @@
 package org.grizz.keeper.client;
 
-import org.grizz.keeper.client.resources.EntriesResource;
-import org.grizz.keeper.client.resources.GroupsResource;
-import org.grizz.keeper.client.resources.UsersResource;
+import lombok.Builder;
+import org.grizz.keeper.client.http.HttpAdapter;
+import org.grizz.keeper.client.resources.EntriesResourceProvider;
+import org.grizz.keeper.client.resources.GroupsResourceProvider;
+import org.grizz.keeper.client.resources.UsersResourceProvider;
 
 import java.util.List;
 
+@Builder
 public class KeeperClient {
-    public KeeperClient(String keeperUrl) {
+    private final EntriesResourceProvider entriesResourceProvider;
+    private final UsersResourceProvider usersResourceProvider;
+    private final GroupsResourceProvider groupsResourceProvider;
+    private final HttpAdapter http;
 
-    }
-
-    public EntriesResource entries() {
+    public EntriesResourceProvider entries() {
         return null;
     }
 
@@ -23,7 +27,7 @@ public class KeeperClient {
         return this;
     }
 
-    public UsersResource users() {
+    public UsersResourceProvider users() {
         return null;
     }
 
@@ -39,7 +43,7 @@ public class KeeperClient {
         return null;
     }
 
-    public GroupsResource groups() {
+    public GroupsResourceProvider groups() {
         return null;
     }
 }

@@ -1,17 +1,27 @@
 package org.grizz;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.grizz.keeper.client.KeeperClient;
+import org.grizz.keeper.client.KeeperClientFactory;
+import org.grizz.keeper.client.model.KeeperEntriesGroup;
 import org.grizz.keeper.client.model.KeeperEntry;
 import org.grizz.keeper.client.model.KeeperKeysGroup;
-import org.grizz.keeper.client.model.KeeperEntriesGroup;
 import org.grizz.keeper.client.model.KeeperUser;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
 public class KeeperClientApplication {
 
-    public static void main(String[] args) {
+    public static void clientSampleUsage() {
         String login = "";
         String password = "";
         String key = "";
@@ -25,7 +35,7 @@ public class KeeperClientApplication {
         KeeperUser user = null;
         KeeperKeysGroup group = null;
 
-        KeeperClient keeperClient = new KeeperClient(keeperUrl);
+        KeeperClient keeperClient = KeeperClientFactory.create(keeperUrl);
 
         KeeperClient loggedInState = keeperClient.login(login, password);
         KeeperClient loggedOutState = keeperClient.logout();
@@ -69,5 +79,31 @@ public class KeeperClientApplication {
         List<String> currentUserKeys_ = keeperClient
           .login(login, password)
           .getCurrentUserKeys();
+    }
+
+    public static void main(String[] args) throws IOException {
+        String keeper = args[0];
+        String login = args[1];
+        String password = args[2];
+
+        BasicCookieStore cookieStore = new BasicCookieStore();
+        CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+
+        HttpUriRequest request = RequestBuilder.post()
+          .setUri(keeper + "/login")
+          .addParameter("username", login)
+          .addParameter("password", password)
+          .build();
+
+        CloseableHttpResponse response = httpClient.execute(request);
+
+        request = RequestBuilder.get(keeper + "/users").build();
+
+        response = httpClient.execute(request);
+
+        InputStream content = response.getEntity().getContent();
+        String contentFromKeeper = IOUtils.toString(content, "UTF-8");
+
+        System.out.println(contentFromKeeper);
     }
 }

@@ -1,11 +1,16 @@
 package org.grizz.keeper.client.resources;
 
+import lombok.Builder;
+import org.grizz.keeper.client.http.HttpAdapter;
 import org.grizz.keeper.client.model.KeeperEntry;
 
 import java.util.Date;
 import java.util.List;
 
-public class EntriesResource {
+@Builder
+public class EntriesResourceProvider {
+    private final HttpAdapter http;
+
     public KeeperEntry add(KeeperEntry keeperEntry) {
         return null;
     }

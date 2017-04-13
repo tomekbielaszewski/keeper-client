@@ -1,10 +1,15 @@
 package org.grizz.keeper.client.resources;
 
+import lombok.Builder;
+import org.grizz.keeper.client.http.HttpAdapter;
 import org.grizz.keeper.client.model.KeeperUser;
 
 import java.util.List;
 
-public class UsersResource {
+@Builder
+public class UsersResourceProvider {
+    private final HttpAdapter http;
+
     public List<KeeperUser> getAll() {
         return null;
     }

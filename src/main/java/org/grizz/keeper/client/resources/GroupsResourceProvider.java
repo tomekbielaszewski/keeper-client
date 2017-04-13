@@ -1,9 +1,14 @@
 package org.grizz.keeper.client.resources;
 
+import lombok.Builder;
+import org.grizz.keeper.client.http.HttpAdapter;
 import org.grizz.keeper.client.model.KeeperKeysGroup;
 import org.grizz.keeper.client.model.KeeperEntriesGroup;
 
-public class GroupsResource {
+@Builder
+public class GroupsResourceProvider {
+    private final HttpAdapter http;
+
     public KeeperKeysGroup get(String groupName) {
         return null;
     }
