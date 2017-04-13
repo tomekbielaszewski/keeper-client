@@ -22,7 +22,7 @@ public class KeeperClient {
 
     public KeeperClient login(String login, String password) {
         http.post(LOGIN, null,
-          new BasicNameValuePair("login", login),
+          new BasicNameValuePair("username", login),
           new BasicNameValuePair("password", password));
         return this;
     }
