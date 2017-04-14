@@ -13,7 +13,7 @@ import static java.text.MessageFormat.format;
 
 @Builder
 public class EntriesResourceProvider {
-    public static final String GET_LAST = "/entries/last/{0}"; //TODO Change to '/entries/{0}/last' - what if we have key 'last' and under {0} would went a number? Conflicts with history.
+    public static final String GET_LAST = "/entries/{0}/last";
     public static final String GET_HISTORY = "/entries/{0}";
     public static final String GET_HISTORY_SINCE = "/entries/{0}/{1}";
     public static final String ADD = "/entries";
