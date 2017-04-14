@@ -10,5 +10,5 @@ public class KeeperEntry<T> {
     private String key;
     private T value;
     private String owner;
-    private long date;
+    private Long date;
 }
