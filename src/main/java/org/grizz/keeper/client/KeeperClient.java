@@ -4,17 +4,24 @@ import com.google.gson.Gson;
 import lombok.Builder;
 import org.apache.http.message.BasicNameValuePair;
 import org.grizz.keeper.client.http.HttpAdapter;
+import org.grizz.keeper.client.model.KeeperKeysGroup;
+import org.grizz.keeper.client.model.KeeperPasswordChange;
+import org.grizz.keeper.client.model.KeeperUser;
 import org.grizz.keeper.client.resources.EntriesResourceProvider;
 import org.grizz.keeper.client.resources.GroupsResourceProvider;
 import org.grizz.keeper.client.resources.UsersResourceProvider;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Builder
 public class KeeperClient {
     private static final String LOGIN = "/login";
-    private static final String CURRENT_USER_KEYS = "/users/keys"; //TODO conflicts with getUserByLogin
-    private static final String CURRENT_USER_GROUPS = "/groups/user"; //TODO conflicts with getGroupByName
+    private static final String LOGOUT = "/logout";
+    private static final String CURRENT_USER = "/user";
+    private static final String CURRENT_USER_KEYS = "/user/keys";
+    private static final String CURRENT_USER_GROUPS = "/user/groups";
+    private static final String CHANGE_PASSWORD = "/user/password";
 
     private final EntriesResourceProvider entriesResourceProvider;
     private final UsersResourceProvider usersResourceProvider;
@@ -30,19 +37,29 @@ public class KeeperClient {
     }
 
     public KeeperClient logout() {
+        http.get(LOGOUT);
         return this;
     }
 
-    public KeeperClient changePassword(String oldPassword, String password) {
-        return null;
+    public KeeperClient changePassword(String oldPassword, String newPassword) {
+        String changePasswordRequest = gson.toJson(new KeeperPasswordChange(oldPassword, newPassword));
+        http.put(CHANGE_PASSWORD, changePasswordRequest);
+        return this;
+    }
+
+    public KeeperUser getCurrentUser() {
+        String user = http.get(CURRENT_USER);
+        return gson.fromJson(user, KeeperUser.class);
     }
 
     public List<String> getCurrentUserKeys() {
-        return null;
+        String keysJson = http.get(CURRENT_USER_KEYS);
+        return Arrays.asList(gson.fromJson(keysJson, String[].class));
     }
 
-    public List<String> getCurrentUserGroups() {
-        return null;
+    public List<KeeperKeysGroup> getCurrentUserGroups() {
+        String groupsJson = http.get(CURRENT_USER_GROUPS);
+        return Arrays.asList(gson.fromJson(groupsJson, KeeperKeysGroup[].class));
     }
 
     public EntriesResourceProvider entries() {
