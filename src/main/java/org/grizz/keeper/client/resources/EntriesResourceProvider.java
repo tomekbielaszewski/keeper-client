@@ -16,11 +16,11 @@ public class EntriesResourceProvider {
     public static final String GET_LAST = "/entries/last/{0}"; //TODO Change to '/entries/{0}/last' - what if we have key 'last' and under {0} would went a number? Conflicts with history.
     public static final String GET_HISTORY = "/entries/{0}";
     public static final String GET_HISTORY_SINCE = "/entries/{0}/{1}";
-    public static final String ADD = "";
-    public static final String ADD_MANY = ""; //TODO there shouldn't be batch requests. How about error handling and transactionality?
-    public static final String DELETE = "";
-    public static final String DELETE_ALL = "";
-    public static final String DELETE_ALL_BEFORE = "";
+    public static final String ADD = "/entries";
+    public static final String DELETE_BY_ID = "/entries/{0}";
+    public static final String DELETE_ALL_BY_KEY = "/entries/all/{0}";
+    public static final String DELETE_ALL_BY_KEY_AND_DATE = "/entries/all/{0}/exact/{1}";
+    public static final String DELETE_ALL_BEFORE_BY_KEY = "/entries/all/{0}/older/than/{1}";
 
     private final HttpAdapter http;
     private final Gson gson = new Gson();
@@ -52,33 +52,31 @@ public class EntriesResourceProvider {
         return gson.fromJson(savedKeeperEntryJson, KeeperEntry.class);
     }
 
-    public List<KeeperEntry> add(List<KeeperEntry> keeperEntries) {
-        String newKeeperEntriesJson = gson.toJson(keeperEntries.toArray(new KeeperEntry[]{}));
-        String savedKeeperEntriesJson = http.post(ADD_MANY, newKeeperEntriesJson);
-        return Arrays.asList(gson.fromJson(savedKeeperEntriesJson, KeeperEntry[].class));
+    public KeeperEntry delete(String id) {
+        String deletionNotification = http.delete(format(DELETE_BY_ID, id));
+        return gson.fromJson(deletionNotification, KeeperEntry.class);
     }
 
-    public int delete(KeeperEntry entry) {
-        return 0; //TODO keeper does not allow deleting by ID
+    public KeeperEntry deleteAll(String key) {
+        String deletionNotification = http.delete(format(DELETE_ALL_BY_KEY, key));
+        return gson.fromJson(deletionNotification, KeeperEntry.class);
     }
 
-    public int deleteExact(String key, long timestamp) {
-        return 0;
+    public KeeperEntry deleteExact(String key, long timestamp) {
+        String deletionNotification = http.delete(format(DELETE_ALL_BY_KEY_AND_DATE, key, timestamp));
+        return gson.fromJson(deletionNotification, KeeperEntry.class);
     }
 
-    public int deleteExact(String key, Date date) {
+    public KeeperEntry deleteExact(String key, Date date) {
         return this.deleteExact(key, date.getTime());
     }
 
-    public int deleteAll(String key) {
-        return 0;
+    public KeeperEntry deleteAllOlderThan(String key, long timestamp) {
+        String deletionNotification = http.delete(format(DELETE_ALL_BEFORE_BY_KEY, key, timestamp));
+        return gson.fromJson(deletionNotification, KeeperEntry.class);
     }
 
-    public int deleteAllSince(String key, long timestamp) {
-        return 0;
-    }
-
-    public int deleteAllSince(String key, Date date) {
-        return this.deleteAllSince(key, date.getTime());
+    public KeeperEntry deleteAllOlderThan(String key, Date date) {
+        return this.deleteAllOlderThan(key, date.getTime());
     }
 }

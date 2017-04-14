@@ -4,10 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -37,6 +34,11 @@ public class HttpAdapter {
     public String post(String url, String content, NameValuePair... params) {
         HttpUriRequest postRequest = buildPostRequest(url, content, params);
         return execute(postRequest);
+    }
+
+    public String delete(String url) {
+        HttpDelete httpDelete = new HttpDelete(baseUrl + url);
+        return execute(httpDelete);
     }
 
     private HttpUriRequest buildPostRequest(String url, String content, NameValuePair[] params) {
