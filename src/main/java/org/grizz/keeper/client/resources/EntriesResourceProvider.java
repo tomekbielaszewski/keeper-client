@@ -13,11 +13,11 @@ import static java.text.MessageFormat.format;
 
 @Builder
 public class EntriesResourceProvider {
-    public static final String GET_LAST = "/entries/last/{0}";
+    public static final String GET_LAST = "/entries/last/{0}"; //TODO Change to '/entries/{0}/last' - what if we have key 'last' and under {0} would went a number? Conflicts with history.
     public static final String GET_HISTORY = "/entries/{0}";
     public static final String GET_HISTORY_SINCE = "/entries/{0}/{1}";
     public static final String ADD = "";
-    public static final String ADD_MANY = "";
+    public static final String ADD_MANY = ""; //TODO there shouldn't be batch requests. How about error handling and transactionality?
     public static final String DELETE = "";
     public static final String DELETE_ALL = "";
     public static final String DELETE_ALL_BEFORE = "";
@@ -47,15 +47,27 @@ public class EntriesResourceProvider {
     }
 
     public KeeperEntry add(KeeperEntry keeperEntry) {
-        return null;
+        String newKeeperEntryJson = gson.toJson(keeperEntry);
+        String savedKeeperEntryJson = http.post(ADD, newKeeperEntryJson);
+        return gson.fromJson(savedKeeperEntryJson, KeeperEntry.class);
     }
 
     public List<KeeperEntry> add(List<KeeperEntry> keeperEntries) {
-        return null;
+        String newKeeperEntriesJson = gson.toJson(keeperEntries.toArray(new KeeperEntry[]{}));
+        String savedKeeperEntriesJson = http.post(ADD_MANY, newKeeperEntriesJson);
+        return Arrays.asList(gson.fromJson(savedKeeperEntriesJson, KeeperEntry[].class));
     }
 
     public int delete(KeeperEntry entry) {
+        return 0; //TODO keeper does not allow deleting by ID
+    }
+
+    public int deleteExact(String key, long timestamp) {
         return 0;
+    }
+
+    public int deleteExact(String key, Date date) {
+        return this.deleteExact(key, date.getTime());
     }
 
     public int deleteAll(String key) {

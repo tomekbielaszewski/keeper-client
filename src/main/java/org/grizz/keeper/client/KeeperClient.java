@@ -13,6 +13,8 @@ import java.util.List;
 @Builder
 public class KeeperClient {
     private static final String LOGIN = "/login";
+    private static final String CURRENT_USER_KEYS = "/users/keys"; //TODO conflicts with getUserByLogin
+    private static final String CURRENT_USER_GROUPS = "/groups/user"; //TODO conflicts with getGroupByName
 
     private final EntriesResourceProvider entriesResourceProvider;
     private final UsersResourceProvider usersResourceProvider;

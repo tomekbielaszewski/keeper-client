@@ -52,10 +52,12 @@ public class KeeperClientApplication {
         List<KeeperEntry> entriesHistoryFromKeySinceDate = keeperClient.entries().getHistory(key, date);
         KeeperEntry lastEntryFromKey = keeperClient.entries().getLast(key);
 
+        int amountOfDeletedEntries_hereAlwaysOne = keeperClient.entries().delete(entry);
+        int amountOfDeletedEntries_byExactTimestamp = keeperClient.entries().deleteExact(key, timestamp);
+        int amountOfDeletedEntries_byExactDate = keeperClient.entries().deleteExact(key, date);
         int amountOfDeletedEntriesFromKey = keeperClient.entries().deleteAll(key);
         int amountOfDeletedEntriesFromKeyOlderThanTimestamp = keeperClient.entries().deleteAllSince(key, timestamp);
         int amountOfDeletedEntriesFromKeyOlderThanDate = keeperClient.entries().deleteAllSince(key, date);
-        int amountOfDeletedEntries_hereUsuallyOne = keeperClient.entries().delete(entry);
 
         List<KeeperUser> allUsers = keeperClient.users().getAll();
         KeeperUser currentUser = keeperClient.users().getCurrent();
