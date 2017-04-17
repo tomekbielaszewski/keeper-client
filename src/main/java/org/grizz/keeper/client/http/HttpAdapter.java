@@ -12,6 +12,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.grizz.keeper.client.http.exceptions.KeeperApiException;
+import org.grizz.keeper.client.model.KeeperEntry;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +24,7 @@ import java.util.Optional;
 @Log
 public class HttpAdapter {
     private final String charset = "UTF-8";
+    private final KeeperApiErrorHandler errorHandler = new KeeperApiErrorHandler();
     private final BasicCookieStore cookieStore = new BasicCookieStore();
     private final CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
     private final String baseUrl;
@@ -80,12 +83,12 @@ public class HttpAdapter {
             CloseableHttpResponse response = httpClient.execute(request);
 
             if (isErrorResponse(response)) {
-                handleError(extractContent(response));
+                handleError(extractContent(response), response.getStatusLine().getStatusCode());
             }
 
             return extractContent(response);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new KeeperApiException(e);
         }
     }
 
@@ -94,9 +97,8 @@ public class HttpAdapter {
         return IOUtils.toString(content, StandardCharsets.UTF_8.name());
     }
 
-    private void handleError(String content) {
-        throw new RuntimeException(content);
-        //TODO
+    private void handleError(String content, int statusCode) {
+        errorHandler.handle(content, statusCode);
     }
 
     private boolean isErrorResponse(HttpResponse response) {
