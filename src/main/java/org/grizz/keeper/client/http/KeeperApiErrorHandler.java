@@ -1,10 +1,7 @@
 package org.grizz.keeper.client.http;
 
 import com.google.gson.Gson;
-import org.grizz.keeper.client.http.exceptions.AuthenticationException;
-import org.grizz.keeper.client.http.exceptions.BadRequestException;
-import org.grizz.keeper.client.http.exceptions.KeeperApiException;
-import org.grizz.keeper.client.http.exceptions.NotFoundException;
+import org.grizz.keeper.client.http.exceptions.*;
 import org.grizz.keeper.client.model.KeeperEntry;
 
 import java.util.HashMap;
@@ -12,15 +9,15 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class KeeperApiErrorHandler {
-    private Map<Integer, Consumer<KeeperEntry>> errors;
-
-    public KeeperApiErrorHandler() {
-        this.errors = new HashMap<>(3);
-
+    private Map<Integer, Consumer<KeeperEntry>> errors = new HashMap<>(4);
+    {
         this.errors.put(400, keeperEntry -> {throw new BadRequestException(keeperEntry);});
         this.errors.put(401, keeperEntry -> {throw new AuthenticationException(keeperEntry);});
         this.errors.put(404, keeperEntry -> {throw new NotFoundException(keeperEntry);});
+        this.errors.put(409, keeperEntry -> {throw new ConflictException(keeperEntry);});
     }
+
+    public KeeperApiErrorHandler() {}
 
     public void handle(String content, int statusCode) {
         KeeperEntry errorContent = new Gson().fromJson(content, KeeperEntry.class);

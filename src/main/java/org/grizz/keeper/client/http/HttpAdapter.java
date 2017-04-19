@@ -2,7 +2,6 @@ package org.grizz.keeper.client.http;
 
 import lombok.extern.java.Log;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -13,7 +12,6 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.grizz.keeper.client.http.exceptions.KeeperApiException;
-import org.grizz.keeper.client.model.KeeperEntry;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,13 +22,15 @@ import java.util.Optional;
 @Log
 public class HttpAdapter {
     private final String charset = "UTF-8";
-    private final KeeperApiErrorHandler errorHandler = new KeeperApiErrorHandler();
     private final BasicCookieStore cookieStore = new BasicCookieStore();
     private final CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
     private final String baseUrl;
 
-    public HttpAdapter(String baseUrl) {
+    private final KeeperApiErrorHandler errorHandler;
+
+    public HttpAdapter(String baseUrl, KeeperApiErrorHandler errorHandler) {
         this.baseUrl = baseUrl;
+        this.errorHandler = errorHandler;
     }
 
     public String get(String url) {

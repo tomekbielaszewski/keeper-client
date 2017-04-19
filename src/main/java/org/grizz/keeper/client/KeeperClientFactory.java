@@ -2,13 +2,15 @@ package org.grizz.keeper.client;
 
 import lombok.NonNull;
 import org.grizz.keeper.client.http.HttpAdapter;
+import org.grizz.keeper.client.http.KeeperApiErrorHandler;
 import org.grizz.keeper.client.resources.EntriesResourceProvider;
 import org.grizz.keeper.client.resources.GroupsResourceProvider;
 import org.grizz.keeper.client.resources.UsersResourceProvider;
 
 public class KeeperClientFactory {
     public static KeeperClient create(@NonNull String keeperUrl) {
-        HttpAdapter http = new HttpAdapter(keeperUrl);
+        KeeperApiErrorHandler errorHandler = new KeeperApiErrorHandler();
+        HttpAdapter http = new HttpAdapter(keeperUrl, errorHandler);
 
         return KeeperClient.builder()
           .http(http)

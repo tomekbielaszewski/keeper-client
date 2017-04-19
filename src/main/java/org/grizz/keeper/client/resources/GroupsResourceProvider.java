@@ -1,8 +1,8 @@
 package org.grizz.keeper.client.resources;
 
-import com.google.gson.Gson;
 import lombok.Builder;
 import org.grizz.keeper.client.http.HttpAdapter;
+import org.grizz.keeper.client.http.JsonCall;
 import org.grizz.keeper.client.model.KeeperEntriesGroup;
 import org.grizz.keeper.client.model.KeeperKeysGroup;
 
@@ -16,27 +16,27 @@ public class GroupsResourceProvider {
     private static final String GROUPED_ENTRIES = "/groups/entries/{0}";
 
     private final HttpAdapter http;
-    private final Gson gson = new Gson();
+    private final JsonCall jsonCall = new JsonCall();
 
     public KeeperKeysGroup get(String groupName) {
-        String keysGroupJson = http.get(format(GROUP_BY_NAME, groupName));
-        return gson.fromJson(keysGroupJson, KeeperKeysGroup.class);
+        return jsonCall.of(() -> http.get(format(GROUP_BY_NAME, groupName)))
+          .executeWithResultAs(KeeperKeysGroup.class);
     }
 
     public KeeperKeysGroup add(KeeperKeysGroup group) {
-        String groupJson = gson.toJson(group);
-        String createdKeysGroupJson = http.post(CREATE_GROUP, groupJson);
-        return gson.fromJson(createdKeysGroupJson, KeeperKeysGroup.class);
+        return jsonCall.of((groupJson) -> http.post(CREATE_GROUP, groupJson))
+          .with(group)
+          .executeWithResultAs(KeeperKeysGroup.class);
     }
 
     public KeeperKeysGroup update(KeeperKeysGroup group) {
-        String groupJson = gson.toJson(group);
-        String updatedKeysGroupJson = http.put(UPDATE_GROUP, groupJson);
-        return gson.fromJson(updatedKeysGroupJson, KeeperKeysGroup.class);
+        return jsonCall.of((groupJson) -> http.put(UPDATE_GROUP, groupJson))
+          .with(group)
+          .executeWithResultAs(KeeperKeysGroup.class);
     }
 
     public KeeperEntriesGroup getEntries(String groupName) {
-        String entriesGroupJson = http.get(format(GROUPED_ENTRIES, groupName));
-        return gson.fromJson(entriesGroupJson, KeeperEntriesGroup.class);
+        return jsonCall.of(() -> http.get(format(GROUPED_ENTRIES, groupName)))
+          .executeWithResultAs(KeeperEntriesGroup.class);
     }
 }

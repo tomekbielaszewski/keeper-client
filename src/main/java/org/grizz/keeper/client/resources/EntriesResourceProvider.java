@@ -1,8 +1,8 @@
 package org.grizz.keeper.client.resources;
 
-import com.google.gson.Gson;
 import lombok.Builder;
 import org.grizz.keeper.client.http.HttpAdapter;
+import org.grizz.keeper.client.http.JsonCall;
 import org.grizz.keeper.client.model.KeeperEntry;
 
 import java.util.Arrays;
@@ -23,17 +23,17 @@ public class EntriesResourceProvider {
     public static final String DELETE_ALL_BEFORE_BY_KEY = "/entries/all/{0}/older/than/{1}";
 
     private final HttpAdapter http;
-    private final Gson gson = new Gson();
+    private final JsonCall jsonCall = new JsonCall();
 
     public List<KeeperEntry> getHistory(String key) {
-        String keeperEntriesJson = http.get(format(GET_HISTORY, key));
-        KeeperEntry[] keeperEntries = gson.fromJson(keeperEntriesJson, KeeperEntry[].class);
+        KeeperEntry[] keeperEntries = jsonCall.of(() -> http.get(format(GET_HISTORY, key)))
+          .executeWithResultAs(KeeperEntry[].class);
         return Arrays.asList(keeperEntries);
     }
 
     public List<KeeperEntry> getHistory(String key, long timestamp) {
-        String keeperEntriesJson = http.get(format(GET_HISTORY_SINCE, key, timestamp));
-        KeeperEntry[] keeperEntries = gson.fromJson(keeperEntriesJson, KeeperEntry[].class);
+        KeeperEntry[] keeperEntries = jsonCall.of(() -> http.get(format(GET_HISTORY_SINCE, key, timestamp)))
+          .executeWithResultAs(KeeperEntry[].class);
         return Arrays.asList(keeperEntries);
     }
 
@@ -42,29 +42,29 @@ public class EntriesResourceProvider {
     }
 
     public KeeperEntry getLast(String key) {
-        String keeperEntryJson = http.get(format(GET_LAST, key));
-        return gson.fromJson(keeperEntryJson, KeeperEntry.class);
+        return jsonCall.of(() -> http.get(format(GET_LAST, key)))
+          .executeWithResultAs(KeeperEntry.class);
     }
 
     public KeeperEntry add(KeeperEntry keeperEntry) {
-        String newKeeperEntryJson = gson.toJson(keeperEntry);
-        String savedKeeperEntryJson = http.post(ADD, newKeeperEntryJson);
-        return gson.fromJson(savedKeeperEntryJson, KeeperEntry.class);
+        return jsonCall.of((entryJson) -> http.post(ADD, entryJson))
+          .with(keeperEntry)
+          .executeWithResultAs(KeeperEntry.class);
     }
 
     public KeeperEntry delete(String id) {
-        String deletionNotification = http.delete(format(DELETE_BY_ID, id));
-        return gson.fromJson(deletionNotification, KeeperEntry.class);
+        return jsonCall.of(() -> http.delete(format(DELETE_BY_ID, id)))
+          .executeWithResultAs(KeeperEntry.class);
     }
 
     public KeeperEntry deleteAll(String key) {
-        String deletionNotification = http.delete(format(DELETE_ALL_BY_KEY, key));
-        return gson.fromJson(deletionNotification, KeeperEntry.class);
+        return jsonCall.of(() -> http.delete(format(DELETE_ALL_BY_KEY, key)))
+          .executeWithResultAs(KeeperEntry.class);
     }
 
     public KeeperEntry deleteExact(String key, long timestamp) {
-        String deletionNotification = http.delete(format(DELETE_ALL_BY_KEY_AND_DATE, key, timestamp));
-        return gson.fromJson(deletionNotification, KeeperEntry.class);
+        return jsonCall.of(() -> http.delete(format(DELETE_ALL_BY_KEY_AND_DATE, key, timestamp)))
+          .executeWithResultAs(KeeperEntry.class);
     }
 
     public KeeperEntry deleteExact(String key, Date date) {
@@ -72,8 +72,8 @@ public class EntriesResourceProvider {
     }
 
     public KeeperEntry deleteAllOlderThan(String key, long timestamp) {
-        String deletionNotification = http.delete(format(DELETE_ALL_BEFORE_BY_KEY, key, timestamp));
-        return gson.fromJson(deletionNotification, KeeperEntry.class);
+        return jsonCall.of(() -> http.delete(format(DELETE_ALL_BEFORE_BY_KEY, key, timestamp)))
+        .executeWithResultAs(KeeperEntry.class);
     }
 
     public KeeperEntry deleteAllOlderThan(String key, Date date) {

@@ -1,8 +1,8 @@
 package org.grizz.keeper.client.resources;
 
-import com.google.gson.Gson;
 import lombok.Builder;
 import org.grizz.keeper.client.http.HttpAdapter;
+import org.grizz.keeper.client.http.JsonCall;
 import org.grizz.keeper.client.model.KeeperUser;
 
 import java.util.Arrays;
@@ -17,21 +17,22 @@ public class UsersResourceProvider {
     private static final String CREATE_USER = "/users";
 
     private final HttpAdapter http;
-    private final Gson gson = new Gson();
+    private final JsonCall jsonCall = new JsonCall();
 
     public List<KeeperUser> getAll() {
-        String users = http.get(ALL_USERS);
-        return Arrays.asList(gson.fromJson(users, KeeperUser[].class));
+        KeeperUser[] keeperUsers = jsonCall.of(() -> http.get(ALL_USERS))
+          .executeWithResultAs(KeeperUser[].class);
+        return Arrays.asList(keeperUsers);
     }
 
     public KeeperUser get(String login) {
-        String users = http.get(format(USER_BY_LOGIN, login));
-        return gson.fromJson(users, KeeperUser.class);
+        return jsonCall.of(() -> http.get(format(USER_BY_LOGIN, login)))
+          .executeWithResultAs(KeeperUser.class);
     }
 
     public KeeperUser create(KeeperUser user) {
-        String userJson = gson.toJson(user);
-        String createdUserJson = http.post(CREATE_USER, userJson);
-        return gson.fromJson(createdUserJson, KeeperUser.class);
+        return jsonCall.of((userJson) -> http.post(CREATE_USER, userJson))
+          .with(user)
+          .executeWithResultAs(KeeperUser.class);
     }
 }
