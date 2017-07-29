@@ -32,7 +32,7 @@ public class JsonCall {
         }
 
         public <T> T executeWithResultAs(Class<T> clazz) {
-            Objects.requireNonNull(payload, "");
+            Objects.requireNonNull(payload, "Attached object cannot be null");
 
             String payloadJson = gson.toJson(payload);
             String responseJson = responseProvider.apply(payloadJson);
