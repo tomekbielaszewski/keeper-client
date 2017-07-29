@@ -27,7 +27,7 @@ public class JsonCall {
         }
 
         public JsonCallWithPayload with(Object payload) {
-            this.payload = Optional.of(payload);
+            this.payload = payload;
             return this;
         }
 

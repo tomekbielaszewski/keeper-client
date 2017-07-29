@@ -94,6 +94,8 @@ public class KeeperClientApplication {
         KeeperEntriesGroup dummyGroup = keeperClient.groups().getEntries("dummyGroup");
 
         System.out.println(dummyGroup);
+
+        keeperClient.entries().add(KeeperEntry.builder().build());
     }
 
     private static KeeperEntry dummyEntry(String key, String value) {

@@ -15,6 +15,7 @@ public class KeeperApiErrorHandler {
         this.errors.put(401, keeperEntry -> {throw new AuthenticationException(keeperEntry);});
         this.errors.put(404, keeperEntry -> {throw new NotFoundException(keeperEntry);});
         this.errors.put(409, keeperEntry -> {throw new ConflictException(keeperEntry);});
+        this.errors.put(500, keeperEntry -> {throw new ServerException();});
     }
 
     public KeeperApiErrorHandler() {}
