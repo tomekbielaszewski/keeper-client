@@ -13,6 +13,7 @@ public class KeeperApiException extends RuntimeException {
     }
 
     public KeeperApiException(KeeperEntry body) {
+        super(body.toString());
         this.body = body;
     }
 }
