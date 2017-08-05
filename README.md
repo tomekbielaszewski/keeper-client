@@ -1,4 +1,4 @@
-# keeper-client
+# keeper-client [![Build Status](https://travis-ci.org/tomekbielaszewski/keeper-client.svg)](https://travis-ci.org/tomekbielaszewski/keeper-client)
 
 Client of simple key-value store `Keeper`
 
